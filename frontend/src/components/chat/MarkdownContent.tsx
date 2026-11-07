@@ -2,6 +2,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Citation } from "@/lib/types";
+import { useCitationTooltip } from "./CitationTooltipContext";
 
 interface MarkdownContentProps {
   content: string;
@@ -14,6 +15,15 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
   citations,
   onSelectCitation,
 }) => {
+  const {
+    onBadgeMouseEnter,
+    onBadgeMouseLeave,
+    onBadgeFocus,
+    onBadgeBlur,
+    dismissTooltip,
+    activeBadgeId,
+  } = useCitationTooltip();
+
   const citationMap = React.useMemo(() => {
     const map = new Map<number, Citation>();
     for (const c of citations) {
@@ -36,29 +46,29 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
           const meta = citation.citation_metadata || {};
           const ticker = meta.ticker || "SEC";
           const fy = meta.fiscal_year ? ` FY${meta.fiscal_year}` : "";
-          const section = meta.section_name ? ` • ${meta.section_name}` : "";
-          const itemKey = `cite-btn-${citation.id || index}-${meta.ticker || "sec"}`;
+          const section = meta.section_name || meta.section ? ` • ${meta.section_name || meta.section}` : "";
+          const itemKey = `cite-btn-${citation.id || index}-${index}`;
+          const isActive = activeBadgeId === itemKey;
 
           return (
-            <span key={itemKey} className="relative inline-block group mx-0.5">
-              <button
-                type="button"
-                onClick={() => onSelectCitation(citation)}
-                aria-label={`View SEC Citation [${index}]: ${ticker}${fy}${section}`}
-                className="inline-flex items-center px-1.5 py-0.2 rounded text-[11px] font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/80 hover:bg-emerald-900 hover:text-emerald-200 hover:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-1 focus:ring-offset-slate-950 transition-colors cursor-pointer"
-              >
-                [{index}]
-              </button>
-              {/* Tooltip on hover / keyboard focus */}
-              <span
-                role="tooltip"
-                className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex group-focus-within:flex z-30 px-2 py-1 rounded bg-slate-900 border border-slate-700 text-[10px] text-slate-200 shadow-xl whitespace-nowrap items-center gap-1 font-mono"
-              >
-                <span className="font-bold text-emerald-400">{ticker}</span>
-                <span>{fy}</span>
-                {section && <span className="text-slate-400 max-w-[140px] truncate">{section}</span>}
-              </span>
-            </span>
+            <button
+              key={itemKey}
+              type="button"
+              onClick={() => {
+                dismissTooltip();
+                onSelectCitation(citation);
+              }}
+              onMouseEnter={(e) => onBadgeMouseEnter(e.currentTarget, citation, itemKey)}
+              onMouseLeave={() => onBadgeMouseLeave(itemKey)}
+              onFocus={(e) => onBadgeFocus(e.currentTarget, citation, itemKey)}
+              onBlur={() => onBadgeBlur(itemKey)}
+              onTouchStart={() => dismissTooltip()}
+              aria-label={`View SEC Citation [${index}]: ${ticker}${fy}${section}`}
+              aria-describedby={isActive ? "citation-tooltip" : undefined}
+              className="inline-flex items-center px-1.5 py-0.2 mx-0.5 rounded text-[11px] font-mono font-bold bg-accent-glow text-accent border border-accent/40 hover:bg-accent/20 hover:text-accent-hover hover:border-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors cursor-pointer align-baseline"
+            >
+              [{index}]
+            </button>
           );
         }
       }
