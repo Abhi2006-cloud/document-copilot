@@ -22,7 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="h-14 border-b border-surface-800 bg-surface-950/90 backdrop-blur-md px-3 sm:px-4 flex items-center justify-between sticky top-0 z-30 pt-[env(safe-area-inset-top)] select-none">
+    <header className="h-14 border-b border-surface-800 bg-surface-950/90 backdrop-blur-md max-md:bg-surface-950 max-md:backdrop-blur-none px-3 sm:px-4 flex items-center justify-between sticky top-0 z-30 pt-[env(safe-area-inset-top)] select-none">
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {onToggleSidebar && (
           <button

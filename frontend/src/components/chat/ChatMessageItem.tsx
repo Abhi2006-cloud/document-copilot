@@ -74,9 +74,9 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = React.memo(
 
         {/* Message Bubble */}
         <div
-          className={`relative rounded-2xl px-3.5 py-3 sm:px-4 sm:py-3.5 text-xs shadow-sm max-w-[88%] sm:max-w-[85%] space-y-2 ${
+          className={`relative rounded-2xl px-3.5 py-3 sm:px-4 sm:py-3.5 text-xs shadow-sm max-md:shadow-none max-w-[88%] sm:max-w-[85%] space-y-2 break-words [overflow-wrap:anywhere] ${
             isUser
-              ? "bg-accent text-surface-950 font-medium break-words"
+              ? "bg-accent text-surface-950 font-medium"
               : "bg-surface-900 border border-surface-800/90 text-slate-200"
           }`}
         >
@@ -86,7 +86,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = React.memo(
               {isUser ? "Analyst Query" : "SEC Copilot"}
             </span>
 
-            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition">
+            <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 max-md:opacity-100 focus-within:opacity-100 transition">
               <button
                 type="button"
                 onClick={handleCopy}
@@ -171,7 +171,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = React.memo(
                       type="button"
                       onClick={() => onSelectCitation(c)}
                       aria-label={`Inspect citation [${c.citation_index}] for ${meta.ticker || "SEC"}`}
-                      className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-surface-950 hover:bg-surface-850 text-[11px] text-slate-300 border border-surface-800 hover:border-accent/50 transition cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-accent min-h-[32px]"
+                      className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-surface-950 hover:bg-surface-850 text-[11px] text-slate-300 border border-surface-800 hover:border-accent/50 transition cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-accent min-h-[32px] max-md:min-h-[44px] max-md:px-2.5 max-md:py-2"
                     >
                       <span className="font-mono text-accent font-bold">
                         [{c.citation_index}]

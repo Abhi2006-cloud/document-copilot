@@ -420,7 +420,7 @@ export const ChatPage: React.FC<ChatPageProps> = ({ userEmail }) => {
   const activeThread = threads.find((t) => t.id === activeThreadId);
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-surface-950 text-slate-100 overflow-hidden">
+    <div className="flex flex-col h-screen h-[100dvh] bg-surface-950 text-slate-100 overflow-hidden">
       <Navbar
         userEmail={userEmail}
         onToggleSidebar={() => setIsSidebarOpenMobile((prev) => !prev)}

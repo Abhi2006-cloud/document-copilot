@@ -71,23 +71,26 @@ export const CitationDrawer: React.FC<CitationDrawerProps> = ({ citation, onClos
   return (
     <dialog
       open
-      className="fixed inset-0 z-50 flex justify-end bg-transparent p-0 m-0 max-w-none max-h-none w-full h-full border-0 overflow-hidden"
+      className="fixed inset-0 z-50 flex max-md:items-end max-md:justify-center md:justify-end bg-transparent p-0 m-0 max-w-none max-h-none w-full h-full border-0 overflow-hidden"
       aria-labelledby="citation-drawer-title"
     >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-surface-950/80 backdrop-blur-sm transition-opacity animate-in fade-in duration-200"
+        className="fixed inset-0 bg-surface-950/80 backdrop-blur-sm max-md:backdrop-blur-none transition-opacity animate-in fade-in duration-200 max-md:duration-150"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Drawer Container (full width on mobile, 440px on md+) */}
+      {/* Drawer Container: full-width bottom sheet on mobile, 440px right drawer on md+ */}
       <div
         ref={drawerRef}
-        className="relative z-10 w-full sm:max-w-md md:w-[440px] bg-surface-900 border-l border-surface-800 shadow-2xl flex flex-col h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] animate-in slide-in-from-right duration-200"
+        className="relative z-10 w-full sm:max-w-md md:w-[440px] bg-surface-900 border-l border-surface-800 shadow-2xl max-md:shadow-none max-md:rounded-t-2xl max-md:border-l-0 max-md:border-t max-md:border-surface-750 flex flex-col h-screen h-[100dvh] max-md:h-auto max-md:max-h-[85vh] max-md:max-h-[85dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] animate-in slide-in-from-right max-md:slide-in-from-bottom duration-200 max-md:duration-150"
       >
+        {/* Mobile drag handle */}
+        <div className="md:hidden w-10 h-1 bg-surface-700 rounded-full mx-auto mt-2 -mb-1 shrink-0" aria-hidden="true" />
+
         {/* Header */}
-        <div className="p-4 border-b border-surface-800 flex items-center justify-between bg-surface-950/80 select-none">
+        <div className="p-4 border-b border-surface-800 flex items-center justify-between bg-surface-950/80 max-md:bg-surface-950 max-md:backdrop-blur-none select-none">
           <div className="flex items-center gap-2">
             <span className="font-mono text-xs px-2.5 py-1 rounded-md bg-accent-glow text-accent border border-accent/40 font-bold">
               [{citation.citation_index}]

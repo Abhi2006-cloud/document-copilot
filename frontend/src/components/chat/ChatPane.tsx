@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { Bot, Sparkles, ArrowDown, RotateCcw, Download, Square } from "lucide-react";
 import type { Message, Citation, AgentTrace } from "@/lib/types";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { ChatMessageItem } from "./ChatMessageItem";
 import { MessageComposer } from "./MessageComposer";
 import { AgentActivityTrace } from "./AgentActivityTrace";
@@ -60,6 +61,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({
   liveStep,
   liveElapsedMs = 0,
 }) => {
+  const isMobile = useIsMobile();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
@@ -69,18 +71,46 @@ export const ChatPane: React.FC<ChatPaneProps> = ({
     const el = scrollContainerRef.current;
     if (!el) return;
     const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-    setIsNearBottom(distanceToBottom < 120);
-  }, []);
+    if (isMobile) {
+      // On mobile, clamp rubber-banding and use slightly larger threshold
+      setIsNearBottom(distanceToBottom <= 150);
+    } else {
+      setIsNearBottom(distanceToBottom < 120);
+    }
+  }, [isMobile]);
 
   // Auto-scroll to bottom only if user is near bottom
   useEffect(() => {
-    if (isNearBottom) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (!isMobile) {
+      // Desktop: preserve exact smooth scroll behavior
+      if (isNearBottom) {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }
+      return;
     }
-  }, [messages, isLoading, liveTrace, isNearBottom]);
+
+    // Mobile: instant scrolling to prevent frame dropping/lag during streaming
+    if (isNearBottom) {
+      const el = scrollContainerRef.current;
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      } else {
+        messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+      }
+    }
+  }, [messages, isLoading, liveTrace, isNearBottom, isMobile]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (isMobile) {
+      const el = scrollContainerRef.current;
+      if (el) {
+        el.scrollTop = el.scrollHeight;
+      } else {
+        messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+      }
+    } else {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
     setIsNearBottom(true);
   };
 
@@ -100,7 +130,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({
     <CitationTooltipProvider>
       <main className="flex-1 flex flex-col h-full bg-surface-950 relative overflow-hidden">
         {/* Header Bar */}
-        <div className="px-4 sm:px-6 py-3 border-b border-surface-800 flex items-center justify-between bg-surface-950/80 backdrop-blur-sm select-none shrink-0">
+        <div className="px-4 sm:px-6 py-3 border-b border-surface-800 flex items-center justify-between bg-surface-950/80 backdrop-blur-sm max-md:bg-surface-950 max-md:backdrop-blur-none select-none shrink-0">
           <div className="min-w-0 pr-4">
             <h1 className="text-xs sm:text-sm font-semibold text-white truncate">
               {activeThreadTitle || "SEC Filing Analysis"}
@@ -127,11 +157,29 @@ export const ChatPane: React.FC<ChatPaneProps> = ({
           </div>
         </div>
 
+        {/* Mobile-only immediate status indicator when turn is generating */}
+        {isLoading && (
+          <div
+            className="md:hidden flex items-center justify-between px-3.5 py-2 mx-3 my-2 rounded-xl bg-surface-900 border border-accent/40 text-xs text-slate-200 animate-in fade-in shrink-0"
+            role="status"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-3.5 h-3.5 rounded-full border-2 border-accent border-t-transparent animate-spin shrink-0" />
+              <span className="font-mono font-medium text-white">Searching filings...</span>
+            </div>
+            {liveElapsedMs > 0 && (
+              <span className="text-[10px] font-mono text-accent">
+                {(liveElapsedMs / 1000).toFixed(1)}s
+              </span>
+            )}
+          </div>
+        )}
+
         {/* Messages Scroll Area */}
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 relative"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 relative overscroll-contain [-webkit-overflow-scrolling:touch]"
         >
           {isInitialLoading ? (
             <div className="max-w-2xl mx-auto space-y-4 py-8">
@@ -247,7 +295,7 @@ export const ChatPane: React.FC<ChatPaneProps> = ({
             type="button"
             onClick={scrollToBottom}
             aria-label="Jump to latest message"
-            className="absolute bottom-24 right-6 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-surface-950 text-xs font-semibold shadow-lg transition cursor-pointer animate-in fade-in slide-in-from-bottom-2 duration-150 min-h-[36px]"
+            className="absolute bottom-24 right-6 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-accent text-surface-950 text-xs font-semibold shadow-lg max-md:shadow-none transition cursor-pointer animate-in fade-in slide-in-from-bottom-2 duration-150 min-h-[36px]"
           >
             <ArrowDown className="w-3.5 h-3.5" />
             <span>Jump to latest</span>

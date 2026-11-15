@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Search,
   Layers,
@@ -26,6 +26,12 @@ export const AgentActivityTrace: React.FC<AgentActivityTraceProps> = ({
   liveElapsedMs = 0,
 }) => {
   const [isExpanded, setIsExpanded] = useState(isGenerating);
+
+  useEffect(() => {
+    if (isGenerating) {
+      setIsExpanded(true);
+    }
+  }, [isGenerating]);
 
   if (!trace && !isGenerating) return null;
 

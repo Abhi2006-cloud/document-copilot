@@ -50,6 +50,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
+    min-height: 100vh;
     min-height: 100dvh;
     overflow-x: hidden;
     color-scheme: dark;
@@ -62,6 +63,7 @@
   body {
     background-color: var(--color-surface-950);
     color: oklch(0.96 0.005 250);
+    min-height: 100vh;
     min-height: 100dvh;
     overflow-x: hidden;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";

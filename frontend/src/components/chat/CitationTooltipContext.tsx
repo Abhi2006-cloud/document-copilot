@@ -9,6 +9,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import type { Citation } from "@/lib/types";
+import { useIsMobile } from "@/lib/useIsMobile";
 
 interface ActiveTooltipData {
   id: string;
@@ -44,6 +45,7 @@ export const useCitationTooltip = () => {
 };
 
 export const CitationTooltipProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isMobile = useIsMobile();
   const [activeTooltip, setActiveTooltip] = useState<ActiveTooltipData | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
 
@@ -129,18 +131,19 @@ export const CitationTooltipProvider: React.FC<{ children: React.ReactNode }> = 
 
   const showForBadge = useCallback(
     (badgeEl: HTMLElement, citation: Citation, id: string) => {
+      if (isMobile) return;
       // Use getClientRects()[0] for wrapped elements, fallback to getBoundingClientRect()
       const clientRects = badgeEl.getClientRects();
       const rect = clientRects.length > 0 ? clientRects[0] : badgeEl.getBoundingClientRect();
       setActiveTooltip({ id, citation, rect });
       updatePosition(rect, tooltipElRef.current);
     },
-    [updatePosition]
+    [isMobile, updatePosition]
   );
 
   const onBadgeMouseEnter = useCallback(
     (el: HTMLElement, citation: Citation, id: string) => {
-      if (isTouchRef.current) return;
+      if (isMobile || isTouchRef.current) return;
       // Check if primary pointer supports hover
       if (window.matchMedia && !window.matchMedia("(hover: hover)").matches) return;
 
@@ -152,7 +155,7 @@ export const CitationTooltipProvider: React.FC<{ children: React.ReactNode }> = 
         showForBadge(el, citation, id);
       }, 120);
     },
-    [showForBadge]
+    [isMobile, showForBadge]
   );
 
   const onBadgeMouseLeave = useCallback(
@@ -170,14 +173,14 @@ export const CitationTooltipProvider: React.FC<{ children: React.ReactNode }> = 
 
   const onBadgeFocus = useCallback(
     (el: HTMLElement, citation: Citation, id: string) => {
-      if (isTouchRef.current) return;
+      if (isMobile || isTouchRef.current) return;
       if (hoverTimerRef.current) {
         clearTimeout(hoverTimerRef.current);
         hoverTimerRef.current = null;
       }
       showForBadge(el, citation, id);
     },
-    [showForBadge]
+    [isMobile, showForBadge]
   );
 
   const onBadgeBlur = useCallback(
@@ -208,8 +211,9 @@ export const CitationTooltipProvider: React.FC<{ children: React.ReactNode }> = 
     >
       {children}
 
-      {/* Render exactly ONE portal tooltip into document.body only when active */}
-      {activeTooltip &&
+      {/* Render exactly ONE portal tooltip into document.body only when active (desktop only) */}
+      {!isMobile &&
+        activeTooltip &&
         typeof document !== "undefined" &&
         createPortal(
           <div

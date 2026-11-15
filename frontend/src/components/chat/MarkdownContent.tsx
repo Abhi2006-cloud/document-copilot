@@ -2,6 +2,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Citation } from "@/lib/types";
+import { useIsMobile } from "@/lib/useIsMobile";
 import { useCitationTooltip } from "./CitationTooltipContext";
 
 interface MarkdownContentProps {
@@ -15,6 +16,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
   citations,
   onSelectCitation,
 }) => {
+  const isMobile = useIsMobile();
   const {
     onBadgeMouseEnter,
     onBadgeMouseLeave,
@@ -58,14 +60,14 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
                 dismissTooltip();
                 onSelectCitation(citation);
               }}
-              onMouseEnter={(e) => onBadgeMouseEnter(e.currentTarget, citation, itemKey)}
-              onMouseLeave={() => onBadgeMouseLeave(itemKey)}
-              onFocus={(e) => onBadgeFocus(e.currentTarget, citation, itemKey)}
-              onBlur={() => onBadgeBlur(itemKey)}
+              onMouseEnter={isMobile ? undefined : (e) => onBadgeMouseEnter(e.currentTarget, citation, itemKey)}
+              onMouseLeave={isMobile ? undefined : () => onBadgeMouseLeave(itemKey)}
+              onFocus={isMobile ? undefined : (e) => onBadgeFocus(e.currentTarget, citation, itemKey)}
+              onBlur={isMobile ? undefined : () => onBadgeBlur(itemKey)}
               onTouchStart={() => dismissTooltip()}
               aria-label={`View SEC Citation [${index}]: ${ticker}${fy}${section}`}
               aria-describedby={isActive ? "citation-tooltip" : undefined}
-              className="inline-flex items-center px-1.5 py-0.2 mx-0.5 rounded text-[11px] font-mono font-bold bg-accent-glow text-accent border border-accent/40 hover:bg-accent/20 hover:text-accent-hover hover:border-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors cursor-pointer align-baseline"
+              className="inline-flex items-center px-1.5 py-0.2 mx-0.5 rounded text-[11px] font-mono font-bold bg-accent-glow text-accent border border-accent/40 hover:bg-accent/20 hover:text-accent-hover hover:border-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors cursor-pointer align-baseline max-md:min-h-[44px] max-md:min-w-[44px] max-md:inline-flex max-md:items-center max-md:justify-center max-md:px-2 max-md:py-1 max-md:my-0.5"
             >
               [{index}]
             </button>

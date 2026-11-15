@@ -44,7 +44,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = React.memo(
     };
 
     return (
-      <div className="p-3 sm:p-4 border-t border-slate-800 bg-slate-950/90 backdrop-blur-md pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="p-3 sm:p-4 border-t border-slate-800 bg-slate-950/90 backdrop-blur-md max-md:bg-surface-950 max-md:backdrop-blur-none max-md:sticky max-md:bottom-0 max-md:z-20 pb-[max(0.75rem,env(safe-area-inset-bottom))] pl-[max(0.75rem,env(safe-area-inset-left))] pr-[max(0.75rem,env(safe-area-inset-right))]">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -62,7 +62,7 @@ export const MessageComposer: React.FC<MessageComposerProps> = React.memo(
               disabled={isLoading}
               placeholder={placeholder}
               aria-label="Ask financial question"
-              className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 pr-12 text-sm sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition resize-none disabled:opacity-60 overflow-y-auto min-h-[44px]"
+              className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3 pr-12 text-base sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition resize-none disabled:opacity-60 overflow-y-auto min-h-[44px]"
             />
           </div>
 

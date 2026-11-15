@@ -232,12 +232,12 @@ export const Sidebar: React.FC<SidebarProps> = React.memo(
           <div className="fixed inset-0 z-40 md:hidden flex animate-in fade-in duration-200">
             {/* Backdrop */}
             <div
-              className="fixed inset-0 bg-surface-950/80 backdrop-blur-sm transition-opacity"
+              className="fixed inset-0 bg-surface-950/80 backdrop-blur-sm max-md:backdrop-blur-none transition-opacity"
               onClick={onCloseMobile}
               aria-hidden="true"
             />
             {/* Drawer */}
-            <div className="relative z-50 h-full max-w-[85vw] shadow-2xl animate-in slide-in-from-left duration-200">
+            <div className="relative z-50 h-full max-w-[85vw] shadow-2xl max-md:shadow-none animate-in slide-in-from-left duration-200">
               {content}
             </div>
           </div>
